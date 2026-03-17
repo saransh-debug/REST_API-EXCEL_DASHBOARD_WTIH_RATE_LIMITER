@@ -11,7 +11,7 @@ from .rate_limiter import rate_limit
 
 
 class fileview(APIView):
-    
+    @rate_limit(max_requests=1, time_period=3600)
     def post(self, request):
         try :
             data = request.data
@@ -22,7 +22,10 @@ class fileview(APIView):
                 serializer.save()
                 filepath = (serializer.data['file'])
                 file_data(f"{settings.BASE_DIR}/{filepath}")
-                return Response(serializer.data, status=201)
+                return Response({
+                    "file":serializer.data, 
+                    "message":"file uploaded successfully"
+                    },status=201)
             else:
                 return Response(serializer.errors, status=400)
         except Exception as e:
