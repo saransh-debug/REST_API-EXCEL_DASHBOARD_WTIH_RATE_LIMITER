@@ -1,6 +1,6 @@
-from django.shortcuts import render
+
 from rest_framework.views import APIView
-from .models import brand, product, Seller, order, filemodel
+from .models import brand
 from .serializers import fileserializer , brandserializer
 from rest_framework.response import Response
 from .file_folder import file_data
@@ -11,7 +11,7 @@ from .rate_limiter import rate_limit
 
 
 class fileview(APIView):
-    @rate_limit(max_requests=1, time_period=3600)
+    @rate_limit(max_requests=3, time_period=3600)
     def post(self, request):
         try :
             data = request.data
@@ -29,12 +29,12 @@ class fileview(APIView):
             else:
                 return Response(serializer.errors, status=400)
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            return Response({"error": f" this is the error raised through the exception--{str(e)}"}, status=500)
         
 class brandsview(viewsets.ModelViewSet):
     queryset = brand.objects.all()
     serializer_class = brandserializer
     
-    @rate_limit(max_requests=5, time_period=60)
+    @rate_limit(max_requests=2, time_period=30)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
